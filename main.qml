@@ -15,26 +15,49 @@ Window {
         onTriggered: {
             var x = numPoints*Math.PI/100
             var y = Math.sin(x)
-            graph.addPoint(x,y)
+            dataSource.addPoint(x,y)
             figure.xMax = x
             figure.xMin = (numPoints-500)*Math.PI/100
             numPoints++
         }
     }
 
-    Figure {
-        id: figure
-        anchors.fill: parent
-        xMin: 0
-        xMax: 10
-        yMin: -1
-        yMax: 1
-        xLabel: "t [s] "
-        yLabel: "T [K]"
-        title: "Temperature"
-        LineGraph {
-            id: graph
+    Rectangle {
+        id: rect
+        width: 250
+        height: 80
+        anchors.top: parent.top
+        anchors.right: parent.right
+    }
+    Column {
+        anchors.right: parent.right
+        anchors.top: rect.bottom
+        Figure {
+            id: figure
+            width: 250
+            height: 300
+            xMin: 0
+            xMax: 10
+            yMin: -1
+            yMax: 1
+            xLabel: "t [s] "
+            yLabel: "T [K]"
+            title: "Temperature"
+            LineGraph {
+                id: graph
+                dataSource: dataSource
+            }
         }
+        Slider {
+            value: figure.yMax
+            onValueChanged: {
+                figure.yMax = value
+            }
+        }
+    }
+
+    LineGraphDataSource {
+        id: dataSource
     }
 }
 

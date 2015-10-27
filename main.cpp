@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
     // qmlRegisterType<Figure>("Figure", 1,0,"QPlot");
     qmlRegisterType<Figure>("QMLPlot", 1,0,"Figure");
     qmlRegisterType<LineGraph>("QMLPlot", 1,0,"LineGraph");
+    qmlRegisterType<LineGraphDataSource>("QMLPlot", 1,0,"LineGraphDataSource");
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 

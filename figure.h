@@ -41,7 +41,6 @@ public:
     Figure(QQuickItem *parent = 0);
     virtual void paint(QPainter *painter);
 
-    QRectF valueRange() { return QRectF(QPointF(xMin(), yMin()), QPointF(xMax(), yMax())); }
     QRectF figureRectangle() { return m_figureRectangle; }
     QPointF scaled(const QPointF &p);
     QRectF scaled(const QRectF &rect);

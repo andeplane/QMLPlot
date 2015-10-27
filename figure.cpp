@@ -74,9 +74,8 @@ void Figure::drawTicks(QPainter *painter) {
 void Figure::drawTickText(QPainter *painter) {
     float deltaX = m_figureRectangle.width() / (numTicksX()+1);
     float deltaY = m_figureRectangle.height() / (numTicksY()+1);
-    QRectF range = valueRange();
-    float deltaXValue = range.width() / (numTicksX()+1);
-    float deltaYValue = range.height() / (numTicksY()+1);
+    float deltaXValue = (xMax()-xMin()) / (numTicksX()+1);
+    float deltaYValue = (yMax()-yMin()) / (numTicksY()+1);
     painter->setFont(m_font);
     QFontMetrics fm(m_font);
     for(int i=0; i<numTicksX()+2; i++) {

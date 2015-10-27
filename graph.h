@@ -12,11 +12,12 @@ protected:
 
 public:
     virtual void paint(Figure *figure, QPainter *painter) = 0;
-    void setDirty(bool dirty);
 
 signals:
 
 public slots:
+    void setDirty(bool dirty);
+    void markDirty();
 };
 
 #endif // GRAPH_H

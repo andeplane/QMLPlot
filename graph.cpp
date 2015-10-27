@@ -14,3 +14,8 @@ void Graph::setDirty(bool dirty) {
         }
     }
 }
+
+void Graph::markDirty()
+{
+    setDirty(true);
+}
