@@ -18,7 +18,6 @@ public:
     LineGraph();
     ~LineGraph();
     virtual void paint(Figure *figure, QPainter *painter);
-signals:
 
 public slots:
     void addPoint(float x, float y);

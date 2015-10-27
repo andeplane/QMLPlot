@@ -41,6 +41,7 @@ void LineGraph::paint(Figure *figure, QPainter *painter)
     }
 
     painter->drawLines(scaledPoints);
+    setDirty(false);
 }
 
 void LineGraph::cleanupMemory() {
@@ -60,4 +61,5 @@ void LineGraph::addPoint(float x, float y)
     if(m_points.size() > 2*m_maxNumberOfPoints) {
         cleanupMemory();
     }
+    setDirty(true);
 }

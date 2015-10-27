@@ -1,5 +1,6 @@
 #include "figure.h"
 #include "graph.h"
+#include <cmath>
 
 Figure::Figure(QQuickItem *parent) : QQuickPaintedItem(parent)
 {
@@ -7,8 +8,12 @@ Figure::Figure(QQuickItem *parent) : QQuickPaintedItem(parent)
     connect(this, SIGNAL(xMaxChanged(float)), this, SLOT(update()));
     connect(this, SIGNAL(yMinChanged(float)), this, SLOT(update()));
     connect(this, SIGNAL(yMaxChanged(float)), this, SLOT(update()));
-    QPointF ul(0.15, 0.1);
-    QPointF dr(0.9, 0.9);
+    connect(this, SIGNAL(xLabelChanged(QString)), this, SLOT(update()));
+    connect(this, SIGNAL(yLabelChanged(QString)), this, SLOT(update()));
+    connect(this, SIGNAL(titleChanged(QString)), this, SLOT(update()));
+    m_font = QFont("times", 16);
+    QPointF ul(0.2, 0.1);
+    QPointF dr(0.9, 0.85);
     m_figureRectangleNormalized = QRectF(ul, dr);
     m_figureRectangle = scaled(m_figureRectangleNormalized);
 }
@@ -19,6 +24,7 @@ void Figure::paint(QPainter *painter)
     drawAxis(painter);
     drawTicks(painter);
     drawTickText(painter);
+    drawLabels(painter);
     drawGraphs(painter);
     painter->setRenderHint(QPainter::Antialiasing);
 }
@@ -71,9 +77,8 @@ void Figure::drawTickText(QPainter *painter) {
     QRectF range = valueRange();
     float deltaXValue = range.width() / (numTicksX()+1);
     float deltaYValue = range.height() / (numTicksY()+1);
-    QFont font("times", 16);
-    painter->setFont(font);
-    QFontMetrics fm(font);
+    painter->setFont(m_font);
+    QFontMetrics fm(m_font);
     for(int i=0; i<numTicksX()+2; i++) {
         float xValue = xMin() + i*deltaXValue;
         QString text = QString::number(xValue, 'f', 2);
@@ -106,27 +111,33 @@ void Figure::drawGraphs(QPainter *painter) {
     for(Graph *graph : graphs) {
         graph->paint(this, painter);
     }
+}
 
-//    QVector<QPointF> scaledPoints;
-//    float rangeX = xMax() - xMin();
-//    float rangeY = yMax() - yMin();
+void Figure::drawText(QPointF position, QString text, QPainter *painter) {
+    QFontMetrics fm(m_font);
+    float textWidthHalf = 0.5*fm.width(text);
+    float textHeightHalf = 0.5*fm.height();
+    QRectF textBox(QPointF(position.x()-textWidthHalf, position.y()-textHeightHalf), QPointF(position.x()+textWidthHalf, position.y()+textHeightHalf));
+    painter->drawText(textBox, text);
+}
 
-//    for(int i=startValueIndex; i<m_points.size()-1; i++) {
-//        const QPointF &p1 = m_points[i];
-//        const QPointF &p2 = m_points[i+1];
-//        if(!isInValueRange(p1) || !isInValueRange(p2)) {
-//            continue;
-//        }
+void Figure::drawLabels(QPainter *painter)
+{
+    // X label
+    float x = m_figureRectangle.left() + 0.5*m_figureRectangle.width();
+    float y = m_figureRectangle.bottom()+40;
+    drawText(QPointF(x,y), m_xLabel, painter);
 
-//        float x1 = (p1.x()-xMin())/rangeX;
-//        float y1 = (p1.y()-yMin())/rangeY;
-//        float x2 = (p2.x()-xMin())/rangeX;
-//        float y2 = (p2.y()-yMin())/rangeY;
-//        scaledPoints.push_back(scaled(QPointF(x1,y1), rect, rect.topLeft()));
-//        scaledPoints.push_back(scaled(QPointF(x2,y2), rect, rect.topLeft()));
-//    }
+    // Y label
+    y = m_figureRectangle.left() - 60;
+    x = -m_figureRectangle.top()-0.5*m_figureRectangle.height();
+    painter->rotate(-90);
+    drawText(QPointF(x,y), m_yLabel, painter);
+    painter->rotate(90);
 
-//    painter->drawLines(scaledPoints);
+    x = m_figureRectangle.left() + 0.5*m_figureRectangle.width();
+    y = m_figureRectangle.top() - 25;
+    drawText(QPointF(x,y), m_title, painter);
 }
 
 QLineF Figure::scaled(const QLineF &line) {
@@ -139,6 +150,26 @@ QPointF Figure::scaled(const QPointF &p) {
 
 QPointF Figure::scaled(const QPointF &p, const QRectF &rect, const QPointF delta) {
     return QPointF(p.x()*rect.width() + delta.x(), p.y()*rect.height() + delta.y());
+}
+
+QString Figure::xLabel() const
+{
+    return m_xLabel;
+}
+
+QString Figure::yLabel() const
+{
+    return m_yLabel;
+}
+
+QString Figure::title() const
+{
+    return m_title;
+}
+
+QFont Figure::font() const
+{
+    return m_font;
 }
 
 QRectF Figure::scaled(const QRectF &rect) {
@@ -179,4 +210,40 @@ void Figure::setYMax(float yMax)
 
     m_yMax = yMax;
     emit yMaxChanged(yMax);
+}
+
+void Figure::setXLabel(QString xLabel)
+{
+    if (m_xLabel == xLabel)
+        return;
+
+    m_xLabel = xLabel;
+    emit xLabelChanged(xLabel);
+}
+
+void Figure::setYLabel(QString yLabel)
+{
+    if (m_yLabel == yLabel)
+        return;
+
+    m_yLabel = yLabel;
+    emit yLabelChanged(yLabel);
+}
+
+void Figure::setTitle(QString title)
+{
+    if (m_title == title)
+        return;
+
+    m_title = title;
+    emit titleChanged(title);
+}
+
+void Figure::setFont(QFont font)
+{
+    if (m_font == font)
+        return;
+
+    m_font = font;
+    emit fontChanged(font);
 }

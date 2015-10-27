@@ -11,7 +11,10 @@ class Figure : public QQuickPaintedItem
     Q_PROPERTY(float xMax READ xMax WRITE setXMax NOTIFY xMaxChanged)
     Q_PROPERTY(float yMin READ yMin WRITE setYMin NOTIFY yMinChanged)
     Q_PROPERTY(float yMax READ yMax WRITE setYMax NOTIFY yMaxChanged)
-
+    Q_PROPERTY(QString xLabel READ xLabel WRITE setXLabel NOTIFY xLabelChanged)
+    Q_PROPERTY(QString yLabel READ yLabel WRITE setYLabel NOTIFY yLabelChanged)
+    Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
+    Q_PROPERTY(QFont font READ font WRITE setFont NOTIFY fontChanged)
 private:
     float m_xMin = 0;
     float m_xMax = 0;
@@ -27,6 +30,13 @@ private:
     void drawTicks(QPainter *painter);
     void drawTickText(QPainter *painter);
     void drawGraphs(QPainter *painter);
+    void drawLabels(QPainter *painter);
+    QString m_xLabel;
+    QString m_yLabel;
+    QString m_title;
+    QFont m_font;
+
+    void drawText(QPointF position, QString text, QPainter *painter);
 public:
     Figure(QQuickItem *parent = 0);
     virtual void paint(QPainter *painter);
@@ -43,17 +53,30 @@ public:
     float yMin() const { return m_yMin; }
     float yMax() const { return m_yMax; }
 
+    QString xLabel() const;
+    QString yLabel() const;
+    QString title() const;
+    QFont font() const;
+
 public slots:
     void setXMin(float xMin);
     void setXMax(float xMax);
     void setYMin(float yMin);
     void setYMax(float yMax);
+    void setXLabel(QString xLabel);
+    void setYLabel(QString yLabel);
+    void setTitle(QString title);
+    void setFont(QFont font);
 
 signals:
     void xMinChanged(float xMin);
     void xMaxChanged(float xMax);
     void yMinChanged(float yMin);
     void yMaxChanged(float yMax);
+    void xLabelChanged(QString xLabel);
+    void yLabelChanged(QString yLabel);
+    void titleChanged(QString title);
+    void fontChanged(QFont font);
 };
 
 #endif // FIGURE_H

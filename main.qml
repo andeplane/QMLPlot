@@ -16,7 +16,6 @@ Window {
             var x = numPoints*Math.PI/100
             var y = Math.sin(x)
             graph.addPoint(x,y)
-            figure.update()
             figure.xMax = x
             figure.xMin = (numPoints-500)*Math.PI/100
             numPoints++
@@ -25,12 +24,14 @@ Window {
 
     Figure {
         id: figure
-        width: parent.width
-        height: parent.height-50
+        anchors.fill: parent
         xMin: 0
         xMax: 10
         yMin: -1
         yMax: 1
+        xLabel: "t [s] "
+        yLabel: "T [K]"
+        title: "Temperature"
         LineGraph {
             id: graph
         }
