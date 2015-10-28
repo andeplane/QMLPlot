@@ -21,6 +21,10 @@ Figure::Figure(QQuickItem *parent) : QQuickPaintedItem(parent)
 void Figure::paint(QPainter *painter)
 {
     m_figureRectangle = scaled(m_figureRectangleNormalized);
+    QBrush brush(m_color);
+    painter->setBackground(brush);
+    painter->setBrush(brush);
+    painter->drawRect(QRect(0,0,width(), height()));
     drawAxis(painter);
     drawTicks(painter);
     drawTickText(painter);
@@ -171,6 +175,11 @@ QFont Figure::font() const
     return m_font;
 }
 
+QColor Figure::color() const
+{
+    return m_color;
+}
+
 QRectF Figure::scaled(const QRectF &rect) {
     return QRectF(scaled(rect.topLeft()), scaled(rect.bottomRight()));
 }
@@ -245,4 +254,13 @@ void Figure::setFont(QFont font)
 
     m_font = font;
     emit fontChanged(font);
+}
+
+void Figure::setColor(QColor color)
+{
+    if (m_color == color)
+        return;
+
+    m_color = color;
+    emit colorChanged(color);
 }

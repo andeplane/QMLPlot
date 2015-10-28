@@ -25,6 +25,7 @@ Window {
     Figure {
         id: figure
         anchors.fill: parent
+        //color: "red"
         xMin: 0
         xMax: 10
         yMin: -1

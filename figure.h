@@ -15,6 +15,7 @@ class Figure : public QQuickPaintedItem
     Q_PROPERTY(QString yLabel READ yLabel WRITE setYLabel NOTIFY yLabelChanged)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(QFont font READ font WRITE setFont NOTIFY fontChanged)
+    Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
 private:
     float m_xMin = 0;
     float m_xMax = 0;
@@ -35,8 +36,9 @@ private:
     QString m_yLabel;
     QString m_title;
     QFont m_font;
-
     void drawText(QPointF position, QString text, QPainter *painter);
+    QColor m_color = "white";
+
 public:
     Figure(QQuickItem *parent = 0);
     virtual void paint(QPainter *painter);
@@ -56,6 +58,7 @@ public:
     QString yLabel() const;
     QString title() const;
     QFont font() const;
+    QColor color() const;
 
 public slots:
     void setXMin(float xMin);
@@ -66,6 +69,7 @@ public slots:
     void setYLabel(QString yLabel);
     void setTitle(QString title);
     void setFont(QFont font);
+    void setColor(QColor color);
 
 signals:
     void xMinChanged(float xMin);
@@ -76,6 +80,7 @@ signals:
     void yLabelChanged(QString yLabel);
     void titleChanged(QString title);
     void fontChanged(QFont font);
+    void colorChanged(QColor color);
 };
 
 #endif // FIGURE_H
