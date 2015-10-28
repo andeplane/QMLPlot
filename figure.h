@@ -21,7 +21,6 @@ private:
     float m_xMax = 0;
     float m_yMin = 0;
     float m_yMax = 0;
-    QRectF m_figureRectangleNormalized;
     QRectF m_figureRectangle;
 
     int numTicksX() { return width() / 100; }

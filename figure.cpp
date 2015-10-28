@@ -12,15 +12,17 @@ Figure::Figure(QQuickItem *parent) : QQuickPaintedItem(parent)
     connect(this, SIGNAL(yLabelChanged(QString)), this, SLOT(update()));
     connect(this, SIGNAL(titleChanged(QString)), this, SLOT(update()));
     m_font = QFont("times", 16);
-    QPointF ul(0.2, 0.1);
-    QPointF dr(0.9, 0.85);
-    m_figureRectangleNormalized = QRectF(ul, dr);
-    m_figureRectangle = scaled(m_figureRectangleNormalized);
 }
 
 void Figure::paint(QPainter *painter)
 {
-    m_figureRectangle = scaled(m_figureRectangleNormalized);
+    // Calculate how much space we need for titles etc
+    float yLabelSpace = 80;
+    float titleSpace = 45;
+    float xLabelSpace = 60;
+    float rightSymmetrySpace = 30;
+    m_figureRectangle = QRectF(QPointF(yLabelSpace, titleSpace), QPointF(width() - rightSymmetrySpace, height() - xLabelSpace));
+    // m_figureRectangle = scaled(m_figureRectangleNormalized);
     QBrush brush(m_color);
     painter->setBackground(brush);
     painter->setBrush(brush);
@@ -52,11 +54,11 @@ void Figure::drawTicks(QPainter *painter) {
         float y1 = m_figureRectangle.bottom();
         float y2 = m_figureRectangle.top();
 
-        QPointF p1(x, y1+tickLengthHalf);
+        QPointF p1(x, y1);
         QPointF p2(x, y1-tickLengthHalf);
         lines.push_back(QLineF(p1, p2));
         p1.setY(y2+tickLengthHalf);
-        p2.setY(y2-tickLengthHalf);
+        p2.setY(y2);
         lines.push_back(QLineF(p1, p2));
     }
 
@@ -65,10 +67,10 @@ void Figure::drawTicks(QPainter *painter) {
         float x2 = m_figureRectangle.right();
         float y = m_figureRectangle.top() + i*deltaY;
         QPointF p1(x1+tickLengthHalf, y);
-        QPointF p2(x1-tickLengthHalf, y);
+        QPointF p2(x1, y);
         lines.push_back(QLineF(p1, p2));
 
-        p1.setX(x2+tickLengthHalf);
+        p1.setX(x2);
         p2.setX(x2-tickLengthHalf);
         lines.push_back(QLineF(p1, p2));
     }
@@ -126,6 +128,7 @@ void Figure::drawText(QPointF position, QString text, QPainter *painter) {
 
 void Figure::drawLabels(QPainter *painter)
 {
+    painter->save();
     // X label
     float x = m_figureRectangle.left() + 0.5*m_figureRectangle.width();
     float y = m_figureRectangle.bottom()+40;
@@ -138,9 +141,14 @@ void Figure::drawLabels(QPainter *painter)
     drawText(QPointF(x,y), m_yLabel, painter);
     painter->rotate(90);
 
+    // Title
+    m_font.setBold(true);
+    painter->setFont(m_font);
     x = m_figureRectangle.left() + 0.5*m_figureRectangle.width();
     y = m_figureRectangle.top() - 25;
     drawText(QPointF(x,y), m_title, painter);
+    m_font.setBold(false);
+    painter->restore();
 }
 
 QLineF Figure::scaled(const QLineF &line) {
