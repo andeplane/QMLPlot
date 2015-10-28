@@ -17,6 +17,13 @@ bool LineGraph::isInValueRange(const QPointF &point, const float &xMin, const fl
 
 void LineGraph::paint(Figure *figure, QPainter *painter)
 {
+    painter->save();
+    QPen pen(m_style);
+    pen.setColor(m_color);
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setWidth(m_width);
+    painter->setPen(pen);
+
     QVector<QPointF> scaledPoints;
     float rangeX = figure->xMax()-figure->xMin();
     float rangeY = figure->yMax()-figure->yMin();
@@ -44,11 +51,27 @@ void LineGraph::paint(Figure *figure, QPainter *painter)
     painter->drawLines(scaledPoints);
     scaledPoints.clear();
     setDirty(false);
+    painter->restore();
 }
 
 LineGraphDataSource *LineGraph::dataSource() const
 {
     return m_dataSource;
+}
+
+QColor LineGraph::color() const
+{
+    return m_color;
+}
+
+Qt::PenStyle LineGraph::style() const
+{
+    return m_style;
+}
+
+int LineGraph::width() const
+{
+    return m_width;
 }
 
 void LineGraphDataSource::cleanupMemory() {
@@ -74,6 +97,33 @@ void LineGraph::setDataSource(LineGraphDataSource *dataSource)
     m_dataSource = dataSource;
     connect(m_dataSource, SIGNAL(dataChanged()), this, SLOT(markDirty()));
     emit dataSourceChanged(dataSource);
+}
+
+void LineGraph::setColor(QColor color)
+{
+    if (m_color == color)
+        return;
+
+    m_color = color;
+    emit colorChanged(color);
+}
+
+void LineGraph::setStyle(Qt::PenStyle style)
+{
+    if (m_style == style)
+        return;
+
+    m_style = style;
+    emit styleChanged(style);
+}
+
+void LineGraph::setWidth(int width)
+{
+    if (m_width == width)
+        return;
+
+    m_width = width;
+    emit widthChanged(width);
 }
 
 void LineGraphDataSource::addPoint(float x, float y)

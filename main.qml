@@ -10,15 +10,17 @@ Window {
 
     Timer {
         property int numPoints: 0
-        interval: 1
+        interval: 10
         repeat: true
         running: true
         onTriggered: {
             var x = numPoints*Math.PI/100
             var y = Math.sin(x)
             dataSource.addPoint(x,y)
-            figure.xMax = x
-            figure.xMin = (numPoints-500)*Math.PI/100
+            figure.xMin = 0
+            figure.xMax = 2*Math.PI
+             figure.xMax = x
+             figure.xMin = (numPoints-500)*Math.PI/100
             numPoints++
         }
     }
@@ -36,6 +38,8 @@ Window {
         LineGraph {
             id: graph
             dataSource: dataSource
+            width: 2
+            // style: Qt.DotLine
         }
     }
 
