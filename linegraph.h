@@ -5,13 +5,18 @@
 
 class LineGraphDataSource : public QObject {
     Q_OBJECT
-public:
+private:
     QVector<QPointF> m_points;
     int m_firstIndex = 0;
     int m_numberOfPoints = 0;
     int m_maxNumberOfPoints = 500;
     void cleanupMemory();
+public:
     Q_INVOKABLE void addPoint(float x, float y);
+    QPointF operator[](int index) { return m_points[index+m_firstIndex]; }
+    QPointF get(int index) { return m_points[index+m_firstIndex]; }
+    int size() { return m_numberOfPoints; }
+
 signals:
     void dataChanged();
 };

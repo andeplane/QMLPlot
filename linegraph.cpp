@@ -24,11 +24,10 @@ void LineGraph::paint(Figure *figure, QPainter *painter)
     float yMin = figure->yMin();
     float xMax = figure->xMax();
     float yMax = figure->yMax();
-    qDebug() << "yMin: " << yMin << " yMax: " << yMax;
 
-    for(int i=m_dataSource->m_firstIndex; i<m_dataSource->m_points.size()-1; i++) {
-        const QPointF &p1 = m_dataSource->m_points[i];
-        const QPointF &p2 = m_dataSource->m_points[i+1];
+    for(int i=0; i< m_dataSource->size()-1; i++) {
+        const QPointF &p1 = m_dataSource->get(i);
+        const QPointF &p2 = m_dataSource->get(i+1);
         if(!isInValueRange(p1, xMin, xMax, yMin, yMax) || !isInValueRange(p2, xMin, xMax, yMin, yMax)) {
             continue;
         }
