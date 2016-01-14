@@ -1,5 +1,71 @@
 #include "linegraph.h"
 #include "figure.h"
+#include <algorithm>
+
+void LineGraphDataSource::cleanupMemory() {
+    m_points.erase(m_points.begin(), m_points.begin()+m_firstIndex-1);
+        m_firstIndex = 0;
+        m_numberOfPoints = m_points.size();
+}
+
+void LineGraphDataSource::addPoint(float x, float y)
+{
+    m_points.push_back(QPointF(x,y));
+    if(m_saveMemory) {
+        if(++m_numberOfPoints > m_maxNumberOfPoints) {
+            m_numberOfPoints = m_maxNumberOfPoints;
+            m_firstIndex++;
+        }
+
+        if(m_points.size() > 2*m_maxNumberOfPoints) {
+            cleanupMemory();
+        }
+    }
+
+    emit dataChanged();
+}
+
+void LineGraphDataSource::setPoints(QVector<QPointF> points)
+{
+    m_points = points;
+    m_numberOfPoints = m_points.size();
+    m_firstIndex = 0;
+}
+
+void LineGraphDataSource::iterate(std::function<void(int i, QPointF point)> action)
+{
+    for(int i=0; i<size(); i++) {
+        action(i, get(i));
+    }
+}
+
+int LineGraphDataSource::size()
+{
+    if(m_saveMemory) return m_numberOfPoints;
+    else return m_points.size();
+}
+
+void LineGraphDataSource::clear()
+{
+    m_points.clear();
+    m_numberOfPoints = 0;
+    m_firstIndex = 0;
+    emit dataChanged();
+}
+
+bool LineGraphDataSource::saveMemory() const
+{
+    return m_saveMemory;
+}
+
+void LineGraphDataSource::setSaveMemory(bool saveMemory)
+{
+    if (m_saveMemory == saveMemory)
+        return;
+
+    m_saveMemory = saveMemory;
+    emit saveMemoryChanged(saveMemory);
+}
 
 LineGraph::LineGraph()
 {
@@ -59,6 +125,11 @@ LineGraphDataSource *LineGraph::dataSource() const
     return m_dataSource;
 }
 
+void LineGraph::addPoint(float x, float y)
+{
+    m_dataSource->addPoint(x,y);
+}
+
 QColor LineGraph::color() const
 {
     return m_color;
@@ -72,17 +143,6 @@ Qt::PenStyle LineGraph::style() const
 int LineGraph::width() const
 {
     return m_width;
-}
-
-void LineGraphDataSource::cleanupMemory() {
-    m_points.erase(m_points.begin(), m_points.begin()+m_firstIndex-1);
-        m_firstIndex = 0;
-        m_numberOfPoints = m_points.size();
-}
-
-void LineGraph::addPoint(float x, float y)
-{
-    m_dataSource->addPoint(x,y);
 }
 
 void LineGraph::setDataSource(LineGraphDataSource *dataSource)
@@ -126,17 +186,13 @@ void LineGraph::setWidth(int width)
     emit widthChanged(width);
 }
 
-void LineGraphDataSource::addPoint(float x, float y)
+void LineGraph::bounds(double &xMin, double &xMax, double &yMin, double &yMax)
 {
-    m_points.push_back(QPointF(x,y));
-    if(++m_numberOfPoints > m_maxNumberOfPoints) {
-        m_numberOfPoints = m_maxNumberOfPoints;
-        m_firstIndex++;
-    }
-
-    if(m_points.size() > 2*m_maxNumberOfPoints) {
-        cleanupMemory();
-    }
-
-    emit dataChanged();
+    m_dataSource->iterate([&](int i, QPointF point) {
+        Q_UNUSED(i);
+        xMin = std::min(xMin, point.x());
+        xMax = std::max(xMax, point.x());
+        yMin = std::min(yMin, point.y());
+        yMax = std::max(yMax, point.y());
+    });
 }

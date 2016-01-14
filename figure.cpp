@@ -1,13 +1,13 @@
 #include "figure.h"
 #include "graph.h"
 #include <cmath>
-
+#include <QDebug>
 Figure::Figure(QQuickItem *parent) : QQuickPaintedItem(parent)
 {
-    connect(this, SIGNAL(xMinChanged(float)), this, SLOT(update()));
-    connect(this, SIGNAL(xMaxChanged(float)), this, SLOT(update()));
-    connect(this, SIGNAL(yMinChanged(float)), this, SLOT(update()));
-    connect(this, SIGNAL(yMaxChanged(float)), this, SLOT(update()));
+    connect(this, SIGNAL(xMinChanged(double)), this, SLOT(update()));
+    connect(this, SIGNAL(xMaxChanged(double)), this, SLOT(update()));
+    connect(this, SIGNAL(yMinChanged(double)), this, SLOT(update()));
+    connect(this, SIGNAL(yMaxChanged(double)), this, SLOT(update()));
     connect(this, SIGNAL(xLabelChanged(QString)), this, SLOT(update()));
     connect(this, SIGNAL(yLabelChanged(QString)), this, SLOT(update()));
     connect(this, SIGNAL(titleChanged(QString)), this, SLOT(update()));
@@ -16,6 +16,12 @@ Figure::Figure(QQuickItem *parent) : QQuickPaintedItem(parent)
 
 void Figure::paint(QPainter *painter)
 {
+    if(m_fitData) {
+        QList<Graph*> graphs = findChildren<Graph*>();
+        for(Graph *graph : graphs) {
+            graph->bounds(m_xMin, m_xMax, m_yMin, m_yMax);
+        }
+    }
     // Calculate how much space we need for titles etc
     float yLabelSpace = 80;
     float titleSpace = 45;
@@ -188,11 +194,16 @@ QColor Figure::color() const
     return m_color;
 }
 
+bool Figure::fitData() const
+{
+    return m_fitData;
+}
+
 QRectF Figure::scaled(const QRectF &rect) {
     return QRectF(scaled(rect.topLeft()), scaled(rect.bottomRight()));
 }
 
-void Figure::setXMin(float xMin)
+void Figure::setXMin(double xMin)
 {
     if (m_xMin == xMin)
         return;
@@ -201,7 +212,7 @@ void Figure::setXMin(float xMin)
     emit xMinChanged(xMin);
 }
 
-void Figure::setXMax(float xMax)
+void Figure::setXMax(double xMax)
 {
     if (m_xMax == xMax)
         return;
@@ -210,16 +221,17 @@ void Figure::setXMax(float xMax)
     emit xMaxChanged(xMax);
 }
 
-void Figure::setYMin(float yMin)
+void Figure::setYMin(double yMin)
 {
-    if (m_yMin == yMin)
+    if (m_yMin == yMin) {
         return;
+    }
 
     m_yMin = yMin;
     emit yMinChanged(yMin);
 }
 
-void Figure::setYMax(float yMax)
+void Figure::setYMax(double yMax)
 {
     if (m_yMax == yMax)
         return;
@@ -271,4 +283,13 @@ void Figure::setColor(QColor color)
 
     m_color = color;
     emit colorChanged(color);
+}
+
+void Figure::setFitData(bool fitData)
+{
+    if (m_fitData == fitData)
+        return;
+
+    m_fitData = fitData;
+    emit fitDataChanged(fitData);
 }

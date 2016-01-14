@@ -12,6 +12,7 @@ protected:
 
 public:
     virtual void paint(Figure *figure, QPainter *painter) = 0;
+    virtual void bounds(double &xMin, double &xMax, double &yMin, double &yMax) = 0;
 
 signals:
 
