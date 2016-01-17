@@ -81,6 +81,48 @@ bool LineGraph::isInValueRange(const QPointF &point, const float &xMin, const fl
     return point.x()>=xMin && point.x() <= xMax && point.y() >= yMin && point.y() <= yMax;
 }
 
+void LineGraph::save(QString filename)
+{
+    if(!m_dataSource) return;
+    QFile file(QUrl(filename).toLocalFile());
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "Could not open file "+filename;
+        return;
+    }
+
+    QTextStream out(&file);
+    m_dataSource->iterate([&](int i, QPointF point) {
+        out << point.x() << " " << point.y() << "\n";
+    });
+    file.close();
+}
+
+void LineGraph::load(QString filename)
+{
+    if(!m_dataSource) return;
+    QFile file(QUrl(filename).toLocalFile());
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "Could not open file "+filename;
+        return;
+    }
+
+    m_dataSource->clear();
+    QTextStream in(&file);
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        QStringList words = line.split(" ");
+        if(words.length() != 2) continue;
+
+        bool castOk;
+        float pointX = QString(words[0]).toFloat(&castOk);
+        if(!castOk) continue;
+        float pointY = QString(words[1]).toFloat(&castOk);
+        if(!castOk) continue;
+        m_dataSource->addPoint(pointX,pointY);
+    }
+    file.close();
+}
+
 void LineGraph::paint(Figure *figure, QPainter *painter)
 {
     painter->save();
@@ -188,6 +230,10 @@ void LineGraph::setWidth(int width)
 
 void LineGraph::bounds(double &xMin, double &xMax, double &yMin, double &yMax)
 {
+    xMin = 1e10;
+    xMax = -1e10;
+    yMin = 1e10;
+    yMax = -1e10;
     m_dataSource->iterate([&](int i, QPointF point) {
         Q_UNUSED(i);
         xMin = std::min(xMin, point.x());

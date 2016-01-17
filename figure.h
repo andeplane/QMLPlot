@@ -62,6 +62,9 @@ public:
     QColor color() const;
     bool fitData() const;
 
+    Q_INVOKABLE void saveSVG(QString filename);
+    Q_INVOKABLE void savePNG(QString filename);
+
 public slots:
     void setXMin(double xMin);
     void setXMax(double xMax);

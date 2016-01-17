@@ -2,6 +2,9 @@
 #include "graph.h"
 #include <cmath>
 #include <QDebug>
+#include <QSvgGenerator>
+#include <QFileDialog>
+
 Figure::Figure(QQuickItem *parent) : QQuickPaintedItem(parent)
 {
     connect(this, SIGNAL(xMinChanged(double)), this, SLOT(update()));
@@ -197,6 +200,38 @@ QColor Figure::color() const
 bool Figure::fitData() const
 {
     return m_fitData;
+}
+
+void Figure::saveSVG(QString filename)
+{
+    if (filename.isEmpty())
+        return;
+    QSvgGenerator generator;
+    generator.setFileName(QUrl(filename).toLocalFile());
+    generator.setSize(QSize(width(), height()));
+    generator.setViewBox(QRect(0, 0, width(), height()));
+    generator.setTitle(tr("SVG Generator Example Drawing"));
+    generator.setDescription(tr("An SVG drawing created by the SVG Generator "
+                             "Example provided with Qt."));
+    QPainter painter;
+    painter.begin(&generator);
+    paint(&painter);
+    painter.end();
+}
+
+void Figure::savePNG(QString filename)
+{
+    if (filename.isEmpty())
+        return;
+
+    QImage img(width(), height(), QImage::Format_ARGB32);
+
+    QPainter painter;
+    painter.begin(&img);
+    paint(&painter);
+    painter.end();
+
+    img.save(QUrl(filename).toLocalFile());
 }
 
 QRectF Figure::scaled(const QRectF &rect) {

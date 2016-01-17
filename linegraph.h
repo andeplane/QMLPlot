@@ -55,6 +55,8 @@ public:
     QColor color() const;
     Qt::PenStyle style() const;
     int width() const;
+    Q_INVOKABLE void load(QString filename);
+    Q_INVOKABLE void save(QString filename);
 
 public slots:
     void addPoint(float x, float y);
