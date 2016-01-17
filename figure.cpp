@@ -22,7 +22,9 @@ void Figure::paint(QPainter *painter)
     if(m_fitData) {
         QList<Graph*> graphs = findChildren<Graph*>();
         for(Graph *graph : graphs) {
-            graph->bounds(m_xMin, m_xMax, m_yMin, m_yMax);
+            if(graph->isVisible()) {
+                graph->bounds(m_xMin, m_xMax, m_yMin, m_yMax);
+            }
         }
     }
     // Calculate how much space we need for titles etc
@@ -123,7 +125,9 @@ void Figure::drawTickText(QPainter *painter) {
 void Figure::drawGraphs(QPainter *painter) {
     QList<Graph*> graphs = findChildren<Graph*>();
     for(Graph *graph : graphs) {
-        graph->paint(this, painter);
+        if(graph->isVisible()) {
+            graph->paint(this, painter);
+        }
     }
 }
 
