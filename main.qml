@@ -62,8 +62,9 @@ Window {
             Button {
                 text: "Save PNG"
                 onClicked: {
-                    fileDialog.mode = "png"
-                    fileDialog.open()
+                    figure.freeze = !figure.freeze
+//                    fileDialog.mode = "png"
+//                    fileDialog.open()
                 }
             }
         }
