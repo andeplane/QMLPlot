@@ -30,6 +30,7 @@ void LineGraphDataSource::setPoints(QVector<QPointF> points)
     m_points = points;
     m_numberOfPoints = m_points.size();
     m_firstIndex = 0;
+    emit dataChanged();
 }
 
 void LineGraphDataSource::iterate(std::function<void(int i, QPointF point)> action)
