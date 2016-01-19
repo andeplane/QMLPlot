@@ -36,13 +36,23 @@ void Figure::paint(QPainter *painter)
         }
 
         if(m_fitData || m_fitX) {
-            setXMax(xMax);
-            setXMin(xMin);
+            if(m_fitExact) {
+                setXMax(xMax);
+                setXMin(xMin);
+            } else {
+                if(xMax > m_xMax) setXMax(xMax);
+                if(xMin < m_xMin) setXMin(xMin);
+            }
         }
 
         if(m_fitData || m_fitY) {
-            setYMax(yMax);
-            setYMin(yMin);
+            if(m_fitExact) {
+                setYMax(yMax);
+                setYMin(yMin);
+            } else {
+                if(yMax > m_yMax) setYMax(yMax);
+                if(yMin < m_yMin) setYMin(yMin);
+            }
         }
     }
     // Calculate how much space we need for titles etc
@@ -256,6 +266,11 @@ void Figure::savePNG(QString filename)
     img.save(QUrl(filename).toLocalFile());
 }
 
+bool Figure::fitExact() const
+{
+    return m_fitExact;
+}
+
 bool Figure::fitX() const
 {
     return m_fitX;
@@ -403,4 +418,13 @@ void Figure::setFitY(bool fitY)
 
     m_fitY = fitY;
     emit fitYChanged(fitY);
+}
+
+void Figure::setFitExact(bool fitExact)
+{
+    if (m_fitExact == fitExact)
+        return;
+
+    m_fitExact = fitExact;
+    emit fitExactChanged(fitExact);
 }
