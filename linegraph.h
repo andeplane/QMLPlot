@@ -22,7 +22,9 @@ public:
     void iterate(std::function<void(int i, QPointF point)> action);
     int size();
     void clear();
+    QVector<QPointF> &points() { return m_points; }
     bool saveMemory() const;
+    void update();
 
 public slots:
     void setSaveMemory(bool saveMemory);

@@ -30,6 +30,7 @@ void LineGraphDataSource::setPoints(QVector<QPointF> points)
     m_points = points;
     m_numberOfPoints = m_points.size();
     m_firstIndex = 0;
+    qDebug() << "I sat points. Here they are: " << m_points;
     emit dataChanged();
 }
 
@@ -57,6 +58,11 @@ void LineGraphDataSource::clear()
 bool LineGraphDataSource::saveMemory() const
 {
     return m_saveMemory;
+}
+
+void LineGraphDataSource::update()
+{
+    emit dataChanged();
 }
 
 void LineGraphDataSource::setSaveMemory(bool saveMemory)
