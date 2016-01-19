@@ -25,10 +25,11 @@ void Figure::paint(QPainter *painter)
     }
     if(m_fitData || m_fitX || m_fitY) {
         QList<Graph*> graphs = findChildren<Graph*>();
-        double xMin = 1e10;
-        double xMax = -1e10;
-        double yMin = 1e10;
-        double yMax = -1e10;
+
+        double xMin = 1e30;
+        double xMax = -1e30;
+        double yMin = 1e30;
+        double yMax = -1e30;
         for(Graph *graph : graphs) {
             if(graph->isVisible()) {
                 graph->bounds(xMin, xMax, yMin, yMax);
