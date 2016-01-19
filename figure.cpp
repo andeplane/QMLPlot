@@ -55,6 +55,7 @@ void Figure::paint(QPainter *painter)
             }
         }
     }
+    
     // Calculate how much space we need for titles etc
     float yLabelSpace = 80;
     float titleSpace = 45;
