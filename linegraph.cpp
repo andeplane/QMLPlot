@@ -25,12 +25,15 @@ void LineGraphDataSource::addPoint(float x, float y)
     emit dataChanged();
 }
 
-void LineGraphDataSource::setPoints(QVector<QPointF> points)
+void LineGraphDataSource::setPoints(QVector<QPointF> points, bool normalized)
 {
     m_points = points;
+    if (normalized) {
+        normalizeArea();
+    }
     m_numberOfPoints = m_points.size();
     m_firstIndex = 0;
-    qDebug() << "I sat points. Here they are: " << m_points;
+    //qDebug() << "I sat points. Here they are: " << m_points;
     emit dataChanged();
 }
 
@@ -63,6 +66,22 @@ bool LineGraphDataSource::saveMemory() const
 void LineGraphDataSource::update()
 {
     emit dataChanged();
+}
+
+void LineGraphDataSource::normalizeArea()
+{
+    double integralSum = 0;
+    for(int i=0; i<m_points.size()-1; i++) {
+        QPointF &p1 = m_points[i];
+        QPointF &p2 = m_points[i+1];
+        double dx = p2.x() - p1.x();
+        double dy = p2.y() + p1.y();
+        integralSum += dx*dy;
+    }
+    integralSum *= 0.5;
+    for(QPointF &point : m_points) {
+        point.setY(point.y()/integralSum);
+    }
 }
 
 void LineGraphDataSource::setSaveMemory(bool saveMemory)

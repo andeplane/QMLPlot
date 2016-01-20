@@ -18,13 +18,14 @@ public:
     Q_INVOKABLE void addPoint(float x, float y);
     QPointF operator[](int index) { return m_points[index+m_firstIndex*m_saveMemory]; }
     QPointF get(int index) { return m_points[index+m_firstIndex*m_saveMemory]; }
-    Q_INVOKABLE void setPoints(QVector<QPointF> points);
+    Q_INVOKABLE void setPoints(QVector<QPointF> points, bool normalized = false);
     void iterate(std::function<void(int i, QPointF point)> action);
     int size();
     void clear();
     QVector<QPointF> &points() { return m_points; }
     bool saveMemory() const;
     void update();
+    void normalizeArea();
 
 public slots:
     void setSaveMemory(bool saveMemory);
