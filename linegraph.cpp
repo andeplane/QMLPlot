@@ -186,20 +186,20 @@ void LineGraph::paint(Figure *figure, QPainter *painter)
             QLineF yMaxLine(xMin, yMax, xMax, yMax);
             QLineF xMinLine(xMin, yMin, xMin, yMax);
             QLineF xMaxLine(xMax, yMin, xMax, yMax);
-            projectOnLine(p1, p2, yMinLine);
-            projectOnLine(p1, p2, yMaxLine);
-            projectOnLine(p1, p2, xMinLine);
-            projectOnLine(p1, p2, xMaxLine);
+            if(p1.y()<yMin) projectOnLine(p1, p2, yMinLine);
+            if(p1.y()>yMax) projectOnLine(p1, p2, yMaxLine);
+            if(p1.x()<xMin) projectOnLine(p1, p2, xMinLine);
+            if(p1.x()>xMax) projectOnLine(p1, p2, xMaxLine);
         }
         if(!isInValueRange(p2, xMin, xMax, yMin, yMax)) {
             QLineF yMinLine(xMin, yMin, xMax, yMin);
             QLineF yMaxLine(xMin, yMax, xMax, yMax);
             QLineF xMinLine(xMin, yMin, xMin, yMax);
             QLineF xMaxLine(xMax, yMin, xMax, yMax);
-            projectOnLine(p2, p1, yMinLine);
-            projectOnLine(p2, p1, yMaxLine);
-            projectOnLine(p2, p1, xMinLine);
-            projectOnLine(p2, p1, xMaxLine);
+            if(p2.y()<yMin) projectOnLine(p2, p1, yMinLine);
+            if(p2.y()>yMax) projectOnLine(p2, p1, yMaxLine);
+            if(p2.x()<xMin) projectOnLine(p2, p1, xMinLine);
+            if(p2.x()>xMax) projectOnLine(p2, p1, xMaxLine);
         }
 
         float x1 = (p1.x()-xMin)/rangeX;

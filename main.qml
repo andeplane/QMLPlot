@@ -29,7 +29,11 @@ Window {
             Layout.fillWidth: true
             Layout.fillHeight: true
             //color: "red"
-            fitData: true
+            fitData: false
+            xMin: 0
+            xMax: 5
+            yMin: 0
+            yMax: 1
             xLabel: "x"
             yLabel: "f(x)"
             title: "Plot of sin(x)"
