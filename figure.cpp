@@ -37,6 +37,11 @@ void Figure::paint(QPainter *painter)
         }
 
         if(m_fitData || m_fitX) {
+            if(xMax > 0) xMax *= 1.1;
+            else xMax *= 0.9;
+            if(xMin > 0) xMin *= 1.1;
+            else xMin *= 0.9;
+
             if(m_fitExact) {
                 setXMax(xMax);
                 setXMin(xMin);
@@ -47,6 +52,11 @@ void Figure::paint(QPainter *painter)
         }
 
         if(m_fitData || m_fitY) {
+            if(yMax > 0) yMax *= 1.1;
+            else yMax *= 0.9;
+            if(yMin > 0) yMin *= 1.1;
+            else yMin *= 0.9;
+
             if(m_fitExact) {
                 setYMax(yMax);
                 setYMin(yMin);

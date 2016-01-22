@@ -1,6 +1,7 @@
 #include "linegraph.h"
 #include "figure.h"
 #include <algorithm>
+#include <QLineF>
 
 void LineGraphDataSource::cleanupMemory() {
     m_points.erase(m_points.begin(), m_points.begin()+m_firstIndex-1);
@@ -107,6 +108,15 @@ bool LineGraph::isInValueRange(const QPointF &point, const float &xMin, const fl
     return point.x()>=xMin && point.x() <= xMax && point.y() >= yMin && point.y() <= yMax;
 }
 
+void LineGraph::projectOnLine(QPointF &point, const QPointF &otherPoint, QLineF line) {
+    QPointF intersectPoint;
+    QLineF pointLine = QLineF(point, otherPoint);
+    QLineF::IntersectType intersection = pointLine.intersect(line, &intersectPoint);
+    if(intersection == QLineF::BoundedIntersection) {
+        point = intersectPoint;
+    }
+}
+
 void LineGraph::save(QString filename)
 {
     if(!m_dataSource) return;
@@ -167,10 +177,29 @@ void LineGraph::paint(Figure *figure, QPainter *painter)
     float yMax = figure->yMax();
 
     for(int i=0; i< m_dataSource->size()-1; i++) {
-        const QPointF &p1 = m_dataSource->get(i);
-        const QPointF &p2 = m_dataSource->get(i+1);
-        if(!isInValueRange(p1, xMin, xMax, yMin, yMax) || !isInValueRange(p2, xMin, xMax, yMin, yMax)) {
-            continue;
+        QPointF p1 = m_dataSource->get(i);
+        QPointF p2 = m_dataSource->get(i+1);
+        if(!isInValueRange(p1, xMin, xMax, yMin, yMax) && !isInValueRange(p1, xMin, xMax, yMin, yMax)) continue;
+
+        if(!isInValueRange(p1, xMin, xMax, yMin, yMax)) {
+            QLineF yMinLine(xMin, yMin, xMax, yMin);
+            QLineF yMaxLine(xMin, yMax, xMax, yMax);
+            QLineF xMinLine(xMin, yMin, xMin, yMax);
+            QLineF xMaxLine(xMax, yMin, xMax, yMax);
+            projectOnLine(p1, p2, yMinLine);
+            projectOnLine(p1, p2, yMaxLine);
+            projectOnLine(p1, p2, xMinLine);
+            projectOnLine(p1, p2, xMaxLine);
+        }
+        if(!isInValueRange(p2, xMin, xMax, yMin, yMax)) {
+            QLineF yMinLine(xMin, yMin, xMax, yMin);
+            QLineF yMaxLine(xMin, yMax, xMax, yMax);
+            QLineF xMinLine(xMin, yMin, xMin, yMax);
+            QLineF xMaxLine(xMax, yMin, xMax, yMax);
+            projectOnLine(p2, p1, yMinLine);
+            projectOnLine(p2, p1, yMaxLine);
+            projectOnLine(p2, p1, xMinLine);
+            projectOnLine(p2, p1, xMaxLine);
         }
 
         float x1 = (p1.x()-xMin)/rangeX;

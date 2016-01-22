@@ -50,6 +50,7 @@ private:
     Qt::PenStyle m_style = Qt::SolidLine;
     int m_width = 1;
 
+    void projectOnLine(QPointF &point, const QPointF &otherPoint, QLineF line);
 public:
     LineGraph();
     ~LineGraph();
